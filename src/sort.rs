@@ -41,6 +41,23 @@ pub fn shell<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     }
 }
 
+// Bubble sort: run time O(n^2) worst case, O(n) in best case with early termination, space - O(1)
+pub fn bubble<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
+    for i in 0..list.len()-1 {
+        let mut swapped = false;
+        for j in 0..list.len()-i-1 {
+            if list[j+1] < list[j] {
+                swapped = true;
+                list.swap(j, j+1);
+            }
+        }
+        if !swapped {
+            // already sorted
+            break;
+        }
+    }
+}
+
 // Merge sort: run time O(n*logn), space O(n)
 pub fn merge<T>(list: &mut [T]) where T: std::cmp::PartialOrd + Copy {
     merge_sort(list, 0, list.len()-1);
@@ -189,6 +206,35 @@ mod tests {
     fn shell_desc_sort() {
         let mut input = vec![5, 4, 3, 2, 1];
         shell(&mut input);
+        check_order(&input);
+    }
+
+
+    #[test]
+    fn bubble_two_elements() {
+        let mut input = vec![2, 1];
+        bubble(&mut input);
+        check_order(&input);
+    }
+
+    #[test]
+    fn bubble_basic_sort() {
+        let mut input = vec![1, 3, 2, 5, 4];
+        bubble(&mut input);
+        check_order(&input);
+    }
+
+    #[test]
+    fn bubble_asc_sort() {
+        let mut input = vec![1, 2, 3, 4, 5];
+        bubble(&mut input);
+        check_order(&input);
+    }
+
+    #[test]
+    fn bubble_desc_sort() {
+        let mut input = vec![5, 4, 3, 2, 1];
+        bubble(&mut input);
         check_order(&input);
     }
 
