@@ -4,6 +4,7 @@ mod shell;
 mod bubble;
 mod merge;
 mod quick;
+mod heap;
 
 pub use selection::*;
 pub use insertion::*;
@@ -11,3 +12,4 @@ pub use shell::*;
 pub use bubble::*;
 pub use merge::*;
 pub use quick::*;
+pub use heap::*;

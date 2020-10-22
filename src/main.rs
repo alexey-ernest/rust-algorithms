@@ -1,4 +1,5 @@
 mod sort;
+mod structs;
 
 fn main() {
 	let mut v = vec![3, 2, 1];
