@@ -14,6 +14,14 @@ impl<T> Heap<T> where T: std::cmp::PartialOrd + Copy + Default {
         }
     }
 
+    pub fn from(list: & [T]) -> Heap<T> {
+        let mut h = Heap::new(list.len());
+        for e in list.iter() {
+            h.push(*e);
+        }
+        h
+    }
+
     pub fn size(&self) -> usize {
         self.size
     }
@@ -111,5 +119,13 @@ mod test {
         h.pop();
         assert_eq!(h.top(), 3);
         assert_eq!(h.size(), 1);
+    }
+
+    #[test]
+    fn from_list() {
+        let h = Heap::from(&vec![2, 3, 1]);
+
+        assert_eq!(h.top(), 1);
+        assert_eq!(h.size(), 3);
     }
 }

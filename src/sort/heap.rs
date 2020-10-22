@@ -2,10 +2,7 @@ use crate::structs::Heap;
 
 // Heap sort: O(n*logn) run time complexity, O(1) - space complexity.
 pub fn heap<T>(list: &mut [T]) where T: std::cmp::PartialOrd + Copy + Default {
-    let mut h: Heap<T> = Heap::new(list.len());
-    for e in list.iter() {
-        h.push(*e);
-    }
+    let mut h: Heap<T> = Heap::from(list);
     for e in list.iter_mut() {
         *e = h.pop();
     }
