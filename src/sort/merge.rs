@@ -1,4 +1,4 @@
-// Merge sort: best and worst run time complexity is O(n*logn), space - O(n)
+/// Merge sort: best and worst run time complexity is O(n*logn), space - O(n)
 pub fn merge<T>(list: &mut [T]) where T: std::cmp::PartialOrd + Copy {
     sort_internal(list, 0, list.len()-1);
 }

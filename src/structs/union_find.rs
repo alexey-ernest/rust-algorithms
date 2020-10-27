@@ -1,4 +1,4 @@
-// Weighted quick-union implementation
+/// Weighted quick-union implementation
 pub struct UnionFind {
     data: Vec<usize>,
     size: Vec<usize>,

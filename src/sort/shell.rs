@@ -1,4 +1,4 @@
-// Shell sort (improved insertion sort): run time O(n^2) average case, O(n) best case for sorted slices, space - O(1)
+/// Shell sort (improved insertion sort): run time O(n^2) average case, O(n) best case for sorted slices, space - O(1)
 pub fn shell<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     let mut k = list.len()/2;
     while k > 0 {

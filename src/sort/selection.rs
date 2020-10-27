@@ -1,4 +1,4 @@
-// Selection sort: run time O(n^2), space - O(1)
+/// Selection sort: run time O(n^2), space - O(1)
 pub fn selection<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     for i in 0..list.len() {
         let mut mini = i;
@@ -22,7 +22,7 @@ mod tests {
             prev = a;
         }
     }
-    
+
 
     #[test]
     fn selection_two_elements() {

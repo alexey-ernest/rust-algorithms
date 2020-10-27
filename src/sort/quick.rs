@@ -1,6 +1,6 @@
 use rand::Rng;
 
-// Quick sort: average run time O(n*logn), space - O(1)
+/// Quick sort: average run time O(n*logn), space - O(1)
 pub fn quick<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     quick_internal(list, 0, list.len()-1);
 }

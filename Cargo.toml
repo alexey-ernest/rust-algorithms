@@ -1,5 +1,5 @@
 [package]
-name = "rust-algorithms"
+name = "rust_algorithms"
 version = "0.1.0"
 authors = ["Alexey <alexey.ernest@gmail.com>"]
 edition = "2018"

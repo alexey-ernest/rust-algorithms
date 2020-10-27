@@ -1,4 +1,4 @@
-// Bubble sort: run time O(n^2) worst case, O(n) in best case with early termination, space - O(1)
+/// Bubble sort: run time O(n^2) worst case, O(n) in best case with early termination, space - O(1)
 pub fn bubble<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     for i in 0..list.len()-1 {
         let mut swapped = false;

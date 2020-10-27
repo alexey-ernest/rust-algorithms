@@ -1,6 +1,6 @@
-use crate::structs::Heap;
+use crate::structs::heap::Heap;
 
-// Heap sort: O(n*logn) run time complexity, O(1) - space complexity.
+/// Heap sort: O(n*logn) run time complexity, O(1) - space complexity.
 pub fn heap<T>(list: &mut [T]) where T: std::cmp::PartialOrd + Copy + Default {
     let mut h: Heap<T> = Heap::from(list);
     for e in list.iter_mut() {

@@ -1,4 +1,4 @@
-// Insertion sort: run time O(n^2) average case, O(n) best case for sorted slices, space - O(1)
+/// Insertion sort: run time O(n^2) average case, O(n) best case for sorted slices, space - O(1)
 pub fn insertion<T>(list: &mut [T]) where T: std::cmp::PartialOrd {
     for i in 1..list.len() {
         for j in (1..i+1).rev() {

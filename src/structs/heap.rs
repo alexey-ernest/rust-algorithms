@@ -1,4 +1,4 @@
-// Min-oriented heap structure
+/// Min-oriented heap structure
 pub struct Heap<T> {
     size: usize,
     data: Vec<T>,
