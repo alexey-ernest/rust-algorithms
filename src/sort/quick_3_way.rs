@@ -16,12 +16,14 @@ fn quick_internal<T>(list: &mut [T], lo: usize, hi: usize) where T: PartialOrd +
         if list[i] < p {
             list.swap(l, i);
             l += 1;
+            i += 1;
         } else if list[i] > p {
             list.swap(i, g);
             g -= 1;
-            i -= 1;
+        } else {
+            i += 1;
         }
-        i += 1;
+        
     }
 
     // excluding list[l..g+1] where all elements equal to p
