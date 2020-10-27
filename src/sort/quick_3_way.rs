@@ -3,7 +3,7 @@ pub fn quick_3_way<T>(list: &mut [T]) where T: PartialOrd + Copy {
     quick_internal(list, 0, list.len()-1);
 }
 
-pub fn quick_internal<T>(list: &mut [T], lo: usize, hi: usize) where T: PartialOrd + Copy {
+fn quick_internal<T>(list: &mut [T], lo: usize, hi: usize) where T: PartialOrd + Copy {
     if lo >= hi || hi >= list.len() {
         return;
     }
@@ -31,7 +31,7 @@ pub fn quick_internal<T>(list: &mut [T], lo: usize, hi: usize) where T: PartialO
     quick_internal(list, g+1, hi);
 }
 
-#[cfg(test)]\
+#[cfg(test)]
 mod test {
     use super::*;
 
@@ -58,8 +58,22 @@ mod test {
     }
 
     #[test]
-    fn quick3_three_elements_inverse() {
+    fn quick3_three_elements_desc() {
         let mut input = vec![3, 2, 1];
+        quick_3_way(&mut input);
+        check_order(&input);
+    }
+
+    #[test]
+    fn quick3_asc_sort() {
+        let mut input = vec![1, 2, 3, 4, 5];
+        quick_3_way(&mut input);
+        check_order(&input);
+    }
+
+    #[test]
+    fn quick3_desc_sort() {
+        let mut input = vec![5, 4, 3, 2, 1];
         quick_3_way(&mut input);
         check_order(&input);
     }
