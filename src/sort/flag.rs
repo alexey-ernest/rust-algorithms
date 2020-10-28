@@ -1,4 +1,4 @@
-/// Dijkstra flag sort algorithm. Sorts a list of only 3 values {0, 1, 2} in O(n) without additional memory usage.
+/// Dijkstra flag sort algorithm. Sorts a list of only 3 values {0, 1, 2} in O(n) time without additional memory usage.
 pub fn flag(list: &mut [i32]) {    
     let mut l = 0;
     let mut i = 0;
