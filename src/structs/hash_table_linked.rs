@@ -1,5 +1,3 @@
-use std::mem;
-
 /// Hash table linked list implementation.
 pub struct HashTableLinked<T> {
     data: Vec<Option<Box<Node<T>>>>,
@@ -12,12 +10,7 @@ struct Node<T> {
     next: Link<T>,
 }
 
-// Zero-abstraction enum. 
-// It utilizes null-pointer layout optimization for enums (no flag bits and no waste of space)
-enum Link<T> {
-    Nill,
-    Next(Box<Node<T>>),
-}
+type Link<T> = Option<Box<Node<T>>>;
 
 const INIT_SIZE: usize = 997;
 
@@ -42,16 +35,16 @@ impl<T> HashTableLinked<T> {
                 let newnode = Box::new(Node {
                     key,
                     value,
-                    next: Link::Nill,
+                    next: Link::None,
                 });
                 self.data[index] = Some(newnode);
             }
             Some(ref mut b) => {
-                let mut x: &mut Box<Node<T>> = b;
+                let mut x = b;
                 while x.key != key {
                     match x.next {
-                        Link::Nill => break,
-                        Link::Next(ref mut n) => {
+                        Link::None => break,
+                        Link::Some(ref mut n) => {
                             x = n;
                         }
                     }
@@ -65,7 +58,7 @@ impl<T> HashTableLinked<T> {
                 let head = Box::new(Node {
                     key,
                     value,
-                    next: Link::Next(next),
+                    next: Link::Some(next),
                 });
                 self.data[index] = Some(head);
             }
@@ -80,8 +73,8 @@ impl<T> HashTableLinked<T> {
                 let mut x = b;
                 while x.key != key {
                     match x.next {
-                        Link::Nill => break,
-                        Link::Next(ref n) => {
+                        Link::None => break,
+                        Link::Some(ref n) => {
                             x = n;
                         }
                     }
@@ -103,8 +96,8 @@ impl<T> HashTableLinked<T> {
                 let mut x = b;
                 while x.key != key {
                     match x.next {
-                        Link::Nill => break,
-                        Link::Next(ref mut n) => {
+                        Link::None => break,
+                        Link::Some(ref mut n) => {
                             x = n;
                         }
                     }
@@ -125,12 +118,12 @@ impl<T> HashTableLinked<T> {
             Some(ref mut x) => {
                 if x.key == key {
                     // remove from the head
-                    let next = mem::replace(&mut x.next, Link::Nill);
+                    let next = x.next.take();
                     match next {
-                        Link::Nill => {
-                            self.data[index] = Option::None;
+                        Link::None => {
+                            self.data[index] = None;
                         }
-                        Link::Next(n) => {
+                        Link::Some(n) => {
                             self.data[index] = Some(n);
                         }
                     }
@@ -139,13 +132,12 @@ impl<T> HashTableLinked<T> {
                     let mut next = &mut x.next;
                     loop {
                         match next {
-                            Link::Nill => break,
-                            Link::Next(n) if n.key == key => {
-                                let nnext = mem::replace(&mut n.next, Link::Nill);
-                                *next = nnext;
+                            Link::None => break,
+                            Link::Some(n) if n.key == key => {
+                                *next = n.next.take();
                                 break;
                             }
-                            Link::Next(n) => {
+                            Link::Some(n) => {
                                 next = &mut n.next;
                             }
                         }
