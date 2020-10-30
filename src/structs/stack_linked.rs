@@ -84,4 +84,15 @@ mod tests {
         });
         assert_eq!(s.peek(), Some(&2));
     }
+
+    #[test]
+    fn push_pop_multi() {
+        let mut s = StackLinked::new();
+        for i in 0..100 {
+            s.push(i);
+        }
+        for i in 0..100 {
+            assert_eq!(s.pop(), Some(100-i-1));
+        }
+    }
 }
