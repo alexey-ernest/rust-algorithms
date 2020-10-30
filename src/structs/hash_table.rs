@@ -10,7 +10,7 @@ const MAX_FILL_PERCENT: f32 = 1.0/4.0;
 const MIN_FILL_PERCENT: f32 = 1.0/8.0;
 
 impl<T> HashTable<T> where T: Copy {
-    pub fn new() -> HashTable<T> {
+    pub fn new() -> Self {
         HashTable {
             keys: vec![None; INIT_SIZE],
             data: vec![None; INIT_SIZE],
@@ -18,7 +18,7 @@ impl<T> HashTable<T> where T: Copy {
         }
     }
 
-    pub fn new_size(size: usize) -> HashTable<T> {
+    pub fn new_size(size: usize) -> Self {
         HashTable {
             keys: vec![None; size],
             data: vec![None; size],
