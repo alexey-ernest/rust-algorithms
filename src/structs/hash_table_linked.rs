@@ -86,9 +86,32 @@ impl<T> HashTableLinked<T> {
                         }
                     }
                 }
-                
+
                 if x.key == key {
                     return Some(&x.value);
+                }
+                return None;
+            }
+        }
+    }
+
+    pub fn get_mut(&mut self, key: usize) -> Option<&mut T> {
+        let index = self.get_index(key);
+        match &mut self.data[index] {
+            None => None,
+            Some(ref mut b) => {
+                let mut x = b;
+                while x.key != key {
+                    match x.next {
+                        Link::Nill => break,
+                        Link::Next(ref mut n) => {
+                            x = n;
+                        }
+                    }
+                }
+                
+                if x.key == key {
+                    return Some(&mut x.value);
                 }
                 return None;
             }
@@ -148,6 +171,18 @@ mod test {
         let mut h = HashTableLinked::new();
         h.set(0, 0);
         assert_eq!(h.get(0), Some(&0));
+    }
+
+    #[test]
+    fn set_get_mut() {
+        let mut h = HashTableLinked::new();
+        h.set(0, 0);
+        assert_eq!(h.get_mut(0), Some(&mut 0));
+
+        h.get_mut(0).map(|val| {
+            *val = 1;
+        });
+        assert_eq!(h.get(0), Some(&1));
     }
 
     #[test]
