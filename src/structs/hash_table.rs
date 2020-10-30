@@ -68,9 +68,14 @@ impl<T> HashTable<T> where T: Copy {
         }
     }
 
-    pub fn get(&self, key: usize) -> Option<T> {
+    pub fn get(&self, key: usize) -> Option<&T> {
         let index = self.get_index(key);
-        self.data[index]
+        self.data[index].as_ref()
+    }
+
+    pub fn get_mut(&mut self, key: usize) -> Option<&mut T> {
+        let index = self.get_index(key);
+        self.data[index].as_mut()
     }
 
     pub fn delete(&mut self, key: usize) {
@@ -125,7 +130,19 @@ mod test {
     fn set_get_one() {
         let mut h = HashTable::new();
         h.set(1, 5);
-        assert_eq!(h.get(1), Some(5));
+        assert_eq!(h.get(1), Some(&5));
+    }
+
+    #[test]
+    fn set_get_mut() {
+        let mut h = HashTable::new();
+        h.set(1, 5);
+        assert_eq!(h.get_mut(1), Some(&mut 5));
+
+        h.get_mut(1).map(|val| {
+            *val = 6;
+        });
+        assert_eq!(h.get(1), Some(&6));
     }
 
     #[test]
@@ -133,8 +150,8 @@ mod test {
         let mut h = HashTable::new();
         h.set(1, 5);
         h.set(2, 3);
-        assert_eq!(h.get(1), Some(5));
-        assert_eq!(h.get(2), Some(3));
+        assert_eq!(h.get(1), Some(&5));
+        assert_eq!(h.get(2), Some(&3));
     }
 
     #[test]
@@ -143,15 +160,15 @@ mod test {
         h.set(1, 1);
         h.set(2, 2);
         h.set(5, 5);
-        assert_eq!(h.get(1), Some(1));
-        assert_eq!(h.get(2), Some(2));
-        assert_eq!(h.get(5), Some(5));
+        assert_eq!(h.get(1), Some(&1));
+        assert_eq!(h.get(2), Some(&2));
+        assert_eq!(h.get(5), Some(&5));
 
         h.delete(1);
 
         assert_eq!(h.get(1), None);
-        assert_eq!(h.get(2), Some(2));
-        assert_eq!(h.get(5), Some(5));
+        assert_eq!(h.get(2), Some(&2));
+        assert_eq!(h.get(5), Some(&5));
     }
 
     #[test]
@@ -160,15 +177,15 @@ mod test {
         h.set(1, 1);
         h.set(6, 6);
         h.set(11, 11);
-        assert_eq!(h.get(1), Some(1));
-        assert_eq!(h.get(6), Some(6));
-        assert_eq!(h.get(11), Some(11));
+        assert_eq!(h.get(1), Some(&1));
+        assert_eq!(h.get(6), Some(&6));
+        assert_eq!(h.get(11), Some(&11));
 
         h.delete(6);
 
-        assert_eq!(h.get(1), Some(1));
+        assert_eq!(h.get(1), Some(&1));
         assert_eq!(h.get(6), None);
-        assert_eq!(h.get(11), Some(11));
+        assert_eq!(h.get(11), Some(&11));
     }
 
     #[test]
@@ -182,7 +199,7 @@ mod test {
         assert_eq!(h.cap(), 15952);
 
         for i in 0..2000 {
-            assert_eq!(h.get(i), Some(i));
+            assert_eq!(h.get(i), Some(&i));
         }
 
         for i in 0..1000 {
@@ -193,7 +210,7 @@ mod test {
         assert_eq!(h.cap(), 7976);
 
         for i in 1000..2000 {
-            assert_eq!(h.get(i), Some(i));
+            assert_eq!(h.get(i), Some(&i));
         }
     }
 }
