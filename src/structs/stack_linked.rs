@@ -54,6 +54,24 @@ impl<T> Drop for StackLinked<T> {
     }
 }
 
+// Iterators implementation
+pub struct IntoIter<T>(StackLinked<T>);
+
+impl<T> StackLinked<T> {
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        self.0.pop()
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -93,6 +111,32 @@ mod tests {
         }
         for i in 0..100 {
             assert_eq!(s.pop(), Some(100-i-1));
+        }
+    }
+
+    #[test]
+    fn into_iter() {
+        let mut s = StackLinked::new();
+        s.push(1);
+        s.push(2);
+        s.push(3);
+
+        let mut iter = s.into_iter();
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(1));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn into_iter_loop() {
+        let mut s = StackLinked::new();
+        s.push(0);
+        s.push(1);
+        s.push(2);
+
+        for (i, v) in s.into_iter().enumerate() {
+            assert_eq!(v, 2-i);
         }
     }
 }
