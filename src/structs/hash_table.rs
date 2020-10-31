@@ -1,3 +1,5 @@
+use std::mem;
+
 /// Auto-resizable hash table linear-probing implementation with O(1) amortized cost.
 pub struct HashTable<T> {
     keys: Vec<Option<usize>>,
@@ -9,19 +11,21 @@ const INIT_SIZE: usize = 997;
 const MAX_FILL_PERCENT: f32 = 1.0/4.0;
 const MIN_FILL_PERCENT: f32 = 1.0/8.0;
 
-impl<T> HashTable<T> where T: Copy {
+impl<T> HashTable<T> {
     pub fn new() -> Self {
-        HashTable {
-            keys: vec![None; INIT_SIZE],
-            data: vec![None; INIT_SIZE],
-            count: 0,
-        }
+        HashTable::new_size(INIT_SIZE)
     }
 
     pub fn new_size(size: usize) -> Self {
+        let mut keys = Vec::with_capacity(size);
+        keys.resize_with(size, || None);
+        
+        let mut data = Vec::with_capacity(size);
+        data.resize_with(size, || None);
+
         HashTable {
-            keys: vec![None; size],
-            data: vec![None; size],
+            keys,
+            data,
             count: 0,
         }
     }
@@ -38,18 +42,15 @@ impl<T> HashTable<T> where T: Copy {
     }
 
     fn rehash(&mut self, newsize: usize) {
-        let mut h = HashTable {
-            keys: vec![None; newsize],
-            data: vec![None; newsize],
-            count: 0,
-        };
-        for (i, k) in self.keys.iter().enumerate() {
+        let mut h = HashTable::new_size(newsize);
+        let keys = mem::replace(&mut self.keys, Vec::new());
+        let data = mem::replace(&mut self.data, Vec::new());
+
+        for (k, v) in keys.into_iter().zip(data.into_iter()) {
             match k {
-                None => {
-                    continue;
-                }
+                None => continue,
                 Some(key) => {
-                    h.set(*key, self.data[i].unwrap());
+                    h.set(key, v.unwrap());
                 }
             }
         }
@@ -90,13 +91,10 @@ impl<T> HashTable<T> where T: Copy {
 
         index = (index + 1) % self.data.len();
         while self.keys[index].is_some() {
-            let k = self.keys[index].unwrap();
-            let v = self.data[index].unwrap();
-            self.keys[index].take();
-            self.data[index].take();
+            let k = self.keys[index].take();
+            let v = self.data[index].take();
             self.count -= 1;
-            self.set(k, v);
-
+            self.set(k.unwrap(), v.unwrap());
             index = (index + 1) % self.data.len();
         }
 
