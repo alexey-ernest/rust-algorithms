@@ -66,11 +66,32 @@ impl<T> StackLinked<T> {
 impl<T> Iterator for IntoIter<T> {
     type Item = T;
 
-    fn next(&mut self) -> Option<T> {
+    fn next(&mut self) -> Option<Self::Item> {
         self.0.pop()
     }
 }
 
+
+pub struct Iter<'a, T> {
+    next: Option<&'a Box<Node<T>>>,
+}
+
+impl<T> StackLinked<T> {
+    pub fn iter(&self) -> Iter<T> {
+        Iter { next: self.head.as_ref() }
+    }
+}
+
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.map(|node| {
+            self.next = node.next.as_ref();
+            &node.val
+        })
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -137,6 +158,32 @@ mod tests {
 
         for (i, v) in s.into_iter().enumerate() {
             assert_eq!(v, 2-i);
+        }
+    }
+
+    #[test]
+    fn iter() {
+        let mut s = StackLinked::new();
+        s.push(1);
+        s.push(2);
+        s.push(3);
+
+        let mut iter = s.iter();
+        assert_eq!(iter.next(), Some(&3));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&1));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn ter_loop() {
+        let mut s = StackLinked::new();
+        s.push(0);
+        s.push(1);
+        s.push(2);
+
+        for (i, v) in s.iter().enumerate() {
+            assert_eq!(v, &(2-i));
         }
     }
 }
