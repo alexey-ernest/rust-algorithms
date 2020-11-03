@@ -123,7 +123,7 @@ impl<T> HashTable<T> {
 #[cfg(test)]
 mod tests {
     extern crate test;
-    
+
     use super::*;
     use rand::Rng;
     use test::Bencher;
@@ -308,6 +308,23 @@ mod tests {
         b.iter(move|| {
             for &i in vals.iter() {
                 h.delete(i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_set_1000_collision_fill_05(b: &mut Bencher) {
+        let mut h = HashTable::new_size(2000);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            vals.push(rng.gen_range(0, 10000) as usize);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.set(i, i);
             }
         });
     }

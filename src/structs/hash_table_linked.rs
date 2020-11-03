@@ -312,4 +312,21 @@ mod test {
             }
         });
     }
+
+    #[bench]
+    fn bench_set_1000_collision_fill_2(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(500);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            vals.push(rng.gen_range(0, 10000) as usize);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.set(i, i);
+            }
+        });
+    }
 }
