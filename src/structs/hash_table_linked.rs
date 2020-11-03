@@ -16,8 +16,12 @@ const INIT_SIZE: usize = 997;
 
 impl<T> HashTableLinked<T> {
     pub fn new() -> Self {
-        let mut vec = Vec::with_capacity(INIT_SIZE);
-        vec.resize_with(INIT_SIZE, || None::<Box<Node<T>>>);
+        HashTableLinked::new_size(INIT_SIZE)
+    }
+
+    pub fn new_size(size: usize) -> Self {
+        let mut vec = Vec::with_capacity(size);
+        vec.resize_with(size, || None::<Box<Node<T>>>);
 
         HashTableLinked {
             data: vec,
@@ -150,7 +154,11 @@ impl<T> HashTableLinked<T> {
 
 #[cfg(test)]
 mod test {
+    extern crate test;
+
     use super::*;
+    use rand::Rng;
+    use test::Bencher;
 
     #[test]
     fn simple_init() {
@@ -219,5 +227,89 @@ mod test {
                 assert_eq!(h.get(i), Some(&i));
             }
         }
+    }
+
+    #[bench]
+    fn bench_set_1(b: &mut Bencher) {
+        let mut h = HashTableLinked::new();
+
+        b.iter(move|| {
+            h.set(1, 1);
+        });
+    }
+
+    #[bench]
+    fn bench_set_1000_cons(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(10000);
+
+        b.iter(move|| {
+            for i in 0..1000 {
+                h.set(i, i);    
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_delete_1000_cons(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(10000);
+        for i in 0..1000 {
+            h.set(i, i);
+        }
+
+        b.iter(move|| {
+            for i in 0..1000 {
+                h.delete(i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_delete_1000_inv_cons(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(10000);
+        for i in 0..1000 {
+            h.set(i, i);
+        }
+
+        b.iter(move|| {
+            for i in (0..1000).rev() {
+                h.delete(i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_set_1000_rand(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(10000);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            vals.push(rng.gen_range(0, 1000) as usize);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.set(i, i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_set_delete_1000_rand(b: &mut Bencher) {
+        let mut h = HashTableLinked::new_size(10000);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            let val = rng.gen_range(0, 1000) as usize;
+            vals.push(val);
+            h.set(val, val);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.delete(i);
+            }
+        });
     }
 }

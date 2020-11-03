@@ -5,6 +5,7 @@ pub struct HashTable<T> {
     keys: Vec<Option<usize>>,
     data: Vec<Option<T>>,
     count: usize,
+    auto_resize: bool,
 }
 
 const INIT_SIZE: usize = 997;
@@ -27,7 +28,12 @@ impl<T> HashTable<T> {
             keys,
             data,
             count: 0,
+            auto_resize: true,
         }
+    }
+
+    pub fn set_autoresize(&mut self, val: bool) {
+        self.auto_resize = val;
     }
 
     fn get_index(&self, key: usize) -> usize {
@@ -64,7 +70,7 @@ impl<T> HashTable<T> {
         self.count += 1;
 
         let fill_percent = (self.count as f32)/(self.data.len() as f32);
-        if fill_percent >= MAX_FILL_PERCENT {
+        if self.auto_resize && fill_percent >= MAX_FILL_PERCENT {
             self.rehash(self.data.len()*2);
         }
     }
@@ -99,7 +105,7 @@ impl<T> HashTable<T> {
         }
 
         let fill_percent = (self.count as f32)/(self.data.len() as f32);
-        if fill_percent <= MIN_FILL_PERCENT {
+        if self.auto_resize && fill_percent <= MIN_FILL_PERCENT {
             self.rehash(self.data.len()/2);
         }
     }
@@ -113,9 +119,14 @@ impl<T> HashTable<T> {
     }
 }
 
+
 #[cfg(test)]
-mod test {
+mod tests {
+    extern crate test;
+    
     use super::*;
+    use rand::Rng;
+    use test::Bencher;
 
     #[test]
     fn init() {
@@ -210,5 +221,94 @@ mod test {
         for i in 1000..2000 {
             assert_eq!(h.get(i), Some(&i));
         }
+    }
+
+    #[bench]
+    fn bench_set_1(b: &mut Bencher) {
+        let mut h = HashTable::new();
+
+        b.iter(move|| {
+            h.set(1, 1);
+        });
+    }
+
+    #[bench]
+    fn bench_set_1000_cons(b: &mut Bencher) {
+        let mut h = HashTable::new_size(10000);
+        h.set_autoresize(false);
+
+        b.iter(move|| {
+            for i in 0..1000 {
+                h.set(i, i);    
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_delete_1000_cons(b: &mut Bencher) {
+        let mut h = HashTable::new_size(10000);
+        h.set_autoresize(false);
+        for i in 0..1000 {
+            h.set(i, i);
+        }
+
+        b.iter(move|| {
+            for i in 0..1000 {
+                h.delete(i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_delete_1000_inv_cons(b: &mut Bencher) {
+        let mut h = HashTable::new_size(10000);
+        h.set_autoresize(false);
+        for i in 0..1000 {
+            h.set(i, i);
+        }
+
+        b.iter(move|| {
+            for i in (0..1000).rev() {
+                h.delete(i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_set_1000_rand(b: &mut Bencher) {
+        let mut h = HashTable::new_size(10000);
+        h.set_autoresize(false);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            vals.push(rng.gen_range(0, 1000) as usize);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.set(i, i);
+            }
+        });
+    }
+
+    #[bench]
+    fn bench_set_delete_1000_rand(b: &mut Bencher) {
+        let mut h = HashTable::new_size(10000);
+        h.set_autoresize(false);
+
+        let mut rng = rand::thread_rng();
+        let mut vals: Vec<usize> = vec![];
+        for _ in 0..1000 {
+            let val = rng.gen_range(0, 1000) as usize;
+            vals.push(val);
+            h.set(val, val);
+        }
+
+        b.iter(move|| {
+            for &i in vals.iter() {
+                h.delete(i);
+            }
+        });
     }
 }
